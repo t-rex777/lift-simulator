@@ -1,0 +1,28 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.form {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 300px;
+  border: 1px gray solid;
+  border-radius: 8px;
+}
+
+.form__input {
+  display: block;
+  width: 100%;
+}
+
+.form__submit-btn {
+  display: block;
+  width: 100%;
+}

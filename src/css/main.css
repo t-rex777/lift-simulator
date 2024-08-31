@@ -34,6 +34,16 @@ html {
   padding: 0 8rem;
 }
 
+.floor {
+  height: 100px;
+  width: 100%;
+  border-bottom: solid 1px black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
 .floor__number {
   white-space: nowrap;
   align-self: flex-end;
@@ -44,11 +54,42 @@ html {
   width: 100%;
   display: flex;
   gap: 1rem;
+  position: relative;
 }
 
-.floor {
-  height: 100px;
-  width: 100%;
-  border-bottom: solid 1px black;
+.floor__down-button,
+.floor__up-button {
+  width: 60px;
+  padding: 6px 16px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.floor__down-button {
+  background-color: rgb(240, 217, 10);
+}
+
+.floor__up-button {
+  background-color: rgb(19, 224, 19);
+}
+
+.lift__wrapper {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  margin-left: 100px;
+  display: flex;
+  gap: 20px;
+}
+
+.lift {
+  height: 80px;
+  width: 40px;
+  background-color: rgb(41, 183, 188);
 }

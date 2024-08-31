@@ -3,6 +3,7 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: monospace;
 }
 
 .form {
@@ -25,4 +26,29 @@ html {
 .form__submit-btn {
   display: block;
   width: 100%;
+}
+
+.lift-simulator {
+  display: flex;
+  flex-direction: column;
+  padding: 0 8rem;
+}
+
+.floor__number {
+  white-space: nowrap;
+  align-self: flex-end;
+  margin-bottom: -8px;
+}
+
+.floor__wrapper {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+}
+
+.floor {
+  height: 100px;
+  width: 100%;
+  border-bottom: solid 1px black;
+  display: flex;
 }

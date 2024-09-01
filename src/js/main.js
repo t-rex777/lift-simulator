@@ -7,12 +7,10 @@ form.addEventListener('submit', handleFormSubmit);
 
 const liftSimulator = document.querySelector('#lift-simulator');
 
-const engine = new LiftSimulator();
+const engine = new LiftSimulator(5, 3);
 
 function handleCallLift(floorNumber) {
-  const liftToMove = engine.addEvent(floorNumber);
-
-  console.log(liftToMove.id);
+  engine.addEvent(floorNumber);
 }
 
 function setupFloors(numberOfFloors) {

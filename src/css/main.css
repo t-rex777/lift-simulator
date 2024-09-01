@@ -82,4 +82,15 @@ html {
   position: absolute;
   bottom: 0;
   background-color: rgb(41, 183, 188);
+  /* animation: moveLift 2s ease 0s 1 normal none; */
+}
+
+@keyframes moveLift {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-100px);
+  }
 }

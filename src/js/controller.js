@@ -1,13 +1,15 @@
 class Lift {
-  static TIME_PER_FLOOR = 2000;
-  static WIDTH = 40;
-  static HEIGHT = 80;
+  static TIME_PER_FLOOR = 1000;
+  static WIDTH = 50;
+  static HEIGHT = 100;
 
-  isMoving = false;
   currentFloor = 0;
-  floors = new Set([]);
+  nextFloor = 0;
+  floorsQueue = new Set([]);
   /** @type('up'|'down'|null) */
   direction = null;
+  timeToReachTheFloor = 0;
+  isMoving = false;
 
   constructor(id) {
     this.id = id;
@@ -17,11 +19,9 @@ class Lift {
     /**
      * floors that are above current floor
      */
-    const floorsToGo = [...this.floors].filter(
+    const floorsToGo = [...this.floorsQueue].filter(
       (floor) => Number(floor) > Number(this.currentFloor)
     );
-
-    console.log({ floorsToGo });
 
     if (floorsToGo.length === 0) return null;
 
@@ -32,62 +32,60 @@ class Lift {
     /**
      * floors that are below current floor
      */
-    const floorsToGo = [...this.floors].filter(
+    const floorsToGo = [...this.floorsQueue].filter(
       (floor) => Number(floor) < Number(this.currentFloor)
     );
-
-    console.log({ floorsToGo });
 
     if (floorsToGo.length === 0) return null;
 
     return Math.min(floorsToGo);
   }
 
+  animate() {
+    console.log('animate');
+    const distance = (this.nextFloor - 1) * (Lift.HEIGHT + 1) * -1;
+    const liftEl = document.getElementById(this.id);
+
+    liftEl.style.transform = `translateY(${distance}px)`;
+  }
+
   move() {
-    if (this.floors.size === 0) return;
+    if (this.floorsQueue.size === 0) return;
 
-    const nextFloor =
-      this.direction === 'up' ? this.#moveUp() : this.#moveDown();
+    if (!this.isMoving) {
+      this.nextFloor = [...this.floorsQueue].shift();
 
-    if (nextFloor === null) return;
+      console.log('moving', this.isMoving);
+      this.isMoving = true;
 
-    this.isMoving = true;
+      this.timeToReachTheFloor =
+        Lift.TIME_PER_FLOOR * Math.abs(this.nextFloor - this.currentFloor);
 
-    const timeToReachTheFloor =
-      Lift.TIME_PER_FLOOR * Math.abs(nextFloor - this.currentFloor);
+      this.direction = this.nextFloor - this.currentFloor > 0 ? 'up' : 'down';
+      this.animate();
 
-    console.log({ timeToReachTheFloor, nextFloor, curr: this.currentFloor });
+      setTimeout(() => {
+        this.isMoving = false;
+        this.currentFloor = this.nextFloor;
 
-    setTimeout(() => {
-      this.isMoving = false;
-      this.currentFloor = nextFloor;
-
-      this.floors.delete(this.currentFloor);
-
-      if (this.floors.size !== 0) {
-        // iterate until the queue is empty
-        this.move();
-      }
-
-      console.log(this.floors);
-    }, timeToReachTheFloor);
+        this.floorsQueue.delete(this.currentFloor);
+        console.log(this.floorsQueue.size);
+        if (this.floorsQueue.size !== 0) {
+          // iterate until the queue is empty
+          this.move();
+        }
+      }, this.timeToReachTheFloor);
+    }
   }
 
   addFloor(floorNumber) {
-    this.floors.add(floorNumber);
-
-    if (
-      !this.direction ||
-      (this.direction === 'up' && floorNumber < this.currentFloor) ||
-      (this.direction === 'down' && floorNumber > this.currentFloor)
-    ) {
-      this.direction = floorNumber > this.currentFloor ? 'up' : 'down';
-    }
+    this.floorsQueue.add(floorNumber);
   }
 }
 
 class LiftSimulator {
   #eventQueue = [];
+  #lastAssignedLiftId = null;
 
   constructor(numberOfFloors = 1, numberOfLifts = 1) {
     this.numberOfFloors = numberOfFloors;
@@ -107,26 +105,19 @@ class LiftSimulator {
 
   #assignLift() {
     /** @type Lift */
-    let closestLift = null;
-    let minDistance = Infinity;
-    const floorToBeAssigned = this.#eventQueue[0];
+    const assignedLift = this.lifts.find((d) => {
+      return this.#lastAssignedLiftId === null ||
+        Number(this.#lastAssignedLiftId) === Number(this.numberOfLifts - 1)
+        ? d.id === 0
+        : d.id === this.#lastAssignedLiftId + 1;
+    });
 
-    for (const lift of this.lifts) {
-      const distance = Math.abs(lift.currentFloor - floorToBeAssigned);
+    this.#lastAssignedLiftId = assignedLift.id;
 
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestLift = lift;
-      }
-    }
+    assignedLift.addFloor(this.#eventQueue.shift());
+    assignedLift.move();
 
-    if (closestLift !== null) {
-      // adds to lift's floor and removes from the event queue
-      closestLift.addFloor(this.#eventQueue.shift());
-      closestLift.move();
-    }
-
-    return closestLift;
+    return assignedLift;
   }
 
   addEvent(floorNumber) {

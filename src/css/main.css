@@ -78,18 +78,8 @@ html {
   background-color: rgb(19, 224, 19);
 }
 
-.lift__wrapper {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  margin-left: 100px;
-  display: flex;
-  gap: 20px;
-}
-
 .lift {
-  height: 80px;
-  width: 40px;
+  position: absolute;
+  bottom: 0;
   background-color: rgb(41, 183, 188);
 }

@@ -1,5 +1,7 @@
 class Lift {
-  static TIME_PER_FLOOR = 1000;
+  static TIME_PER_FLOOR = 2000;
+  static WIDTH = 40;
+  static HEIGHT = 80;
 
   isMoving = false;
   currentFloor = 0;
@@ -19,6 +21,8 @@ class Lift {
       (floor) => Number(floor) > Number(this.currentFloor)
     );
 
+    console.log({ floorsToGo });
+
     if (floorsToGo.length === 0) return null;
 
     return Math.min(floorsToGo);
@@ -32,13 +36,14 @@ class Lift {
       (floor) => Number(floor) < Number(this.currentFloor)
     );
 
+    console.log({ floorsToGo });
+
     if (floorsToGo.length === 0) return null;
 
     return Math.min(floorsToGo);
   }
 
   move() {
-    console.log(this.floors);
     if (this.floors.size === 0) return;
 
     const nextFloor =
@@ -48,13 +53,24 @@ class Lift {
 
     this.isMoving = true;
 
+    const timeToReachTheFloor =
+      Lift.TIME_PER_FLOOR * Math.abs(nextFloor - this.currentFloor);
+
+    console.log({ timeToReachTheFloor, nextFloor, curr: this.currentFloor });
+
     setTimeout(() => {
       this.isMoving = false;
       this.currentFloor = nextFloor;
 
       this.floors.delete(this.currentFloor);
+
+      if (this.floors.size !== 0) {
+        // iterate until the queue is empty
+        this.move();
+      }
+
       console.log(this.floors);
-    }, Lift.TIME_PER_FLOOR);
+    }, timeToReachTheFloor);
   }
 
   addFloor(floorNumber) {
@@ -90,6 +106,7 @@ class LiftSimulator {
   }
 
   #assignLift() {
+    /** @type Lift */
     let closestLift = null;
     let minDistance = Infinity;
     const floorToBeAssigned = this.#eventQueue[0];
@@ -108,11 +125,20 @@ class LiftSimulator {
       closestLift.addFloor(this.#eventQueue.shift());
       closestLift.move();
     }
+
+    return closestLift;
   }
 
   addEvent(floorNumber) {
     this.#eventQueue.push(floorNumber);
 
-    this.#assignLift();
+    return this.#assignLift();
   }
 }
+
+/**
+ * maintain a queue
+ * assign lifts one floor from the queue and remove it
+ * there will be a queue for individual lift
+ * the lift have to iterate until its queue is empty
+ */

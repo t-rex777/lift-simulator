@@ -10,7 +10,9 @@ const liftSimulator = document.querySelector('#lift-simulator');
 const engine = new LiftSimulator();
 
 function handleCallLift(floorNumber) {
-  engine.addEvent(floorNumber);
+  const liftToMove = engine.addEvent(floorNumber);
+
+  console.log(liftToMove.id);
 }
 
 function setupFloors(numberOfFloors) {
@@ -58,19 +60,20 @@ function setupFloors(numberOfFloors) {
 
 function setupLifts(numberOfLifts) {
   const lastFloor = document.querySelectorAll("[data-first-floor='true']")[0];
-
-  const liftWrapper = document.createElement('div');
-  liftWrapper.className = 'lift__wrapper';
+  const leftMargin = 100; // so that lift don't overlap over buttons
+  const gap = 10;
 
   Array.from({ length: numberOfLifts }).forEach((_, i) => {
     const lift = document.createElement('div');
+
+    lift.id = i;
     lift.className = 'lift';
-    lift.style.left = `${100 + i * 40}px`;
+    lift.style.left = `${leftMargin + i * (Lift.WIDTH + gap)}px`;
+    lift.style.width = `${Lift.WIDTH}px`;
+    lift.style.height = `${Lift.HEIGHT}px`;
 
-    liftWrapper.appendChild(lift);
+    lastFloor.appendChild(lift);
   });
-
-  lastFloor.appendChild(liftWrapper);
 }
 
 function handleFormSubmit(event) {
@@ -82,9 +85,6 @@ function handleFormSubmit(event) {
   numberOfFloors = formValues['number-of-floors'];
   numberOfLifts = formValues['number-of-lifts'];
   displayForm = true;
-
-  // liftSimulator.style.display = 'flex';
-  // form.style.display = 'none';
 
   setupFloors(numberOfFloors);
   setupLifts(numberOfLifts);

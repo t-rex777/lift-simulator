@@ -7,26 +7,36 @@ form.addEventListener('submit', handleFormSubmit);
 
 const liftSimulator = document.querySelector('#lift-simulator');
 
+const engine = new LiftSimulator();
+
+function handleCallLift(floorNumber) {
+  engine.addEvent(floorNumber);
+}
+
 function setupFloors(numberOfFloors) {
   Array.from({ length: numberOfFloors }).forEach((_, i) => {
     const floor = document.createElement('div');
     const floorWrapper = document.createElement('div');
-    const floorNumber = document.createElement('span');
+    const floorNumberDiv = document.createElement('span');
     const upButton = document.createElement('button');
     const downButton = document.createElement('button');
+
+    const floorNumber = Number(numberOfFloors - i);
+    upButton.onclick = () => handleCallLift(floorNumber);
+    downButton.onclick = () => handleCallLift(floorNumber);
 
     floor.appendChild(upButton);
     floor.appendChild(downButton);
 
     floorWrapper.appendChild(floor);
-    floorWrapper.appendChild(floorNumber);
+    floorWrapper.appendChild(floorNumberDiv);
 
     upButton.innerText = 'Up';
     downButton.innerText = 'Down';
-    floorNumber.innerText = `Floor ${Number(numberOfFloors - i)}`;
+    floorNumberDiv.innerText = `Floor ${floorNumber}`;
 
     floor.className = 'floor';
-    floorNumber.className = 'floor__number';
+    floorNumberDiv.className = 'floor__number';
     floorWrapper.className = 'floor__wrapper';
     upButton.className = 'floor__up-button';
     downButton.className = 'floor__down-button';
@@ -34,7 +44,7 @@ function setupFloors(numberOfFloors) {
     if (i === 0) {
       upButton.style.display = 'none';
     }
-    ('');
+
     floorWrapper.setAttribute('data-first-floor', 'false');
 
     if (i === numberOfFloors - 1) {
@@ -84,5 +94,3 @@ function handleFormSubmit(event) {
 
 setupFloors(5);
 setupLifts(3);
-
-new LiftSimulator().move(5);

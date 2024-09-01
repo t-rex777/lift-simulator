@@ -85,7 +85,7 @@ html {
   /* animation: moveLift 2s ease 0s 1 normal none; */
 }
 
-@keyframes moveLift {
+/* @keyframes moveLift {
   0% {
     transform: translateY(0);
   }
@@ -93,4 +93,4 @@ html {
   100% {
     transform: translateY(-100px);
   }
-}
+} */

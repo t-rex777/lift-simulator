@@ -42,11 +42,22 @@ class Lift {
   }
 
   animate() {
-    console.log('animate');
     const distance = (this.nextFloor - 1) * (Lift.HEIGHT + 1) * -1;
     const liftEl = document.getElementById(this.id);
+    let init = 0;
+    let intervalKey;
+    const step = 10;
 
-    liftEl.style.transform = `translateY(${distance}px)`;
+    // TODO: calculate negative distance and all
+
+    intervalKey = setInterval(() => {
+      liftEl.style.transform = `translateY(-${init}px)`;
+      init++;
+
+      if (init === Math.abs(Math.floor(distance))) {
+        clearInterval(intervalKey);
+      }
+    }, step);
   }
 
   move() {

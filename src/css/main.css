@@ -35,6 +35,7 @@ html {
 }
 
 .floor {
+  box-sizing: border-box;
   height: 100px;
   width: 100%;
   border-bottom: solid 1px black;

@@ -2,9 +2,10 @@ class Lift {
   static TIME_PER_FLOOR = 1000;
   static WIDTH = 50;
   static HEIGHT = 100;
+  static BORDER_HEIGHT = 1;
 
-  currentFloor = 0;
-  nextFloor = 0;
+  currentFloor = 1;
+  nextFloor = 1;
   floorsQueue = new Set([]);
   /** @type('up'|'down'|null) */
   direction = null;
@@ -42,19 +43,33 @@ class Lift {
   }
 
   animate() {
-    const distance = (this.nextFloor - 1) * (Lift.HEIGHT + 1) * -1;
-    const liftEl = document.getElementById(this.id);
-    let init = 0;
+    const liftElement = document.getElementById(this.id);
+
+    const distanceToTravel =
+      (this.nextFloor - this.currentFloor) * (Lift.HEIGHT + Lift.BORDER_HEIGHT);
+
+    let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
+    const finalPosition = Math.abs(
+      Math.floor((this.nextFloor - 1) * (Lift.HEIGHT + Lift.BORDER_HEIGHT))
+    );
+
     let intervalKey;
     const step = 10;
 
-    // TODO: calculate negative distance and all
+    if (distanceToTravel === 0) {
+      return;
+    }
 
     intervalKey = setInterval(() => {
-      liftEl.style.transform = `translateY(-${init}px)`;
-      init++;
+      liftElement.style.transform = `translateY(-${initialPosition}px)`;
 
-      if (init === Math.abs(Math.floor(distance))) {
+      initialPosition =
+        this.currentFloor > this.nextFloor
+          ? initialPosition - 1
+          : initialPosition + 1;
+
+      // stop the animation
+      if (initialPosition === finalPosition) {
         clearInterval(intervalKey);
       }
     }, step);
@@ -66,7 +81,6 @@ class Lift {
     if (!this.isMoving) {
       this.nextFloor = [...this.floorsQueue].shift();
 
-      console.log('moving', this.isMoving);
       this.isMoving = true;
 
       this.timeToReachTheFloor =
@@ -80,7 +94,7 @@ class Lift {
         this.currentFloor = this.nextFloor;
 
         this.floorsQueue.delete(this.currentFloor);
-        console.log(this.floorsQueue.size);
+
         if (this.floorsQueue.size !== 0) {
           // iterate until the queue is empty
           this.move();
@@ -116,12 +130,18 @@ class LiftSimulator {
 
   #assignLift() {
     /** @type Lift */
-    const assignedLift = this.lifts.find((d) => {
-      return this.#lastAssignedLiftId === null ||
-        Number(this.#lastAssignedLiftId) === Number(this.numberOfLifts - 1)
-        ? d.id === 0
-        : d.id === this.#lastAssignedLiftId + 1;
-    });
+    let assignedLift;
+
+    if (this.numberOfLifts === 1) {
+      assignedLift = this.lifts[0];
+    } else {
+      assignedLift = this.lifts.find((d) => {
+        return this.#lastAssignedLiftId === null ||
+          Number(this.#lastAssignedLiftId) === Number(this.numberOfLifts - 1)
+          ? d.id === 0
+          : d.id === this.#lastAssignedLiftId + 1;
+      });
+    }
 
     this.#lastAssignedLiftId = assignedLift.id;
 
@@ -132,15 +152,10 @@ class LiftSimulator {
   }
 
   addEvent(floorNumber) {
+    console.log({ floorNumber });
+
     this.#eventQueue.push(floorNumber);
 
     return this.#assignLift();
   }
 }
-
-/**
- * maintain a queue
- * assign lifts one floor from the queue and remove it
- * there will be a queue for individual lift
- * the lift have to iterate until its queue is empty
- */

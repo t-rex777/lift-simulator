@@ -7,13 +7,7 @@ form.addEventListener('submit', handleFormSubmit);
 
 const liftSimulator = document.querySelector('#lift-simulator');
 
-const engine = new LiftSimulator(5, 3);
-
-function handleCallLift(floorNumber) {
-  engine.addEvent(floorNumber);
-}
-
-function setupFloors(numberOfFloors) {
+function setupFloors(engine, numberOfFloors) {
   Array.from({ length: numberOfFloors }).forEach((_, i) => {
     const floor = document.createElement('div');
     const floorWrapper = document.createElement('div');
@@ -22,8 +16,9 @@ function setupFloors(numberOfFloors) {
     const downButton = document.createElement('button');
 
     const floorNumber = Number(numberOfFloors - i);
-    upButton.onclick = () => handleCallLift(floorNumber);
-    downButton.onclick = () => handleCallLift(floorNumber);
+
+    upButton.onclick = () => engine.addEvent(floorNumber);
+    downButton.onclick = () => engine.addEvent(floorNumber);
 
     floor.appendChild(upButton);
     floor.appendChild(downButton);
@@ -74,8 +69,13 @@ function setupLifts(numberOfLifts) {
   });
 }
 
+function resetSimulator() {
+  liftSimulator.innerHTML = '';
+}
+
 function handleFormSubmit(event) {
   event.preventDefault();
+  resetSimulator();
 
   const formData = new FormData(form);
   const formValues = Object.fromEntries(formData.entries());
@@ -84,11 +84,10 @@ function handleFormSubmit(event) {
   numberOfLifts = formValues['number-of-lifts'];
   displayForm = true;
 
-  setupFloors(numberOfFloors);
+  const engine = new LiftSimulator(numberOfFloors, numberOfLifts);
+
+  setupFloors(engine, numberOfFloors);
   setupLifts(numberOfLifts);
 
   form.reset();
 }
-
-setupFloors(5);
-setupLifts(3);

@@ -45,13 +45,14 @@ class Lift {
   animate() {
     const liftElement = document.getElementById(this.id);
 
+    let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
+
     const distanceToTravel = Math.abs(
       (this.nextFloor - this.currentFloor) * (Lift.HEIGHT + Lift.BORDER_HEIGHT)
     );
 
-    let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
     const finalPosition = Math.abs(
-      Math.floor((this.nextFloor - 1) * (Lift.HEIGHT + Lift.BORDER_HEIGHT))
+      Math.floor((this.nextFloor - 1) * Lift.HEIGHT)
     );
 
     let intervalKey;
@@ -70,11 +71,8 @@ class Lift {
           ? initialPosition - 1
           : initialPosition + 1;
 
-      const stopPosition =
-        initialPosition === finalPosition - (finalPosition % 100); // subtracting border heights;
-
       // stop the animation
-      if (stopPosition) {
+      if (initialPosition === finalPosition) {
         clearInterval(intervalKey);
       }
     }, step);

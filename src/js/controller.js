@@ -1,5 +1,7 @@
 class Lift {
   static TIME_PER_FLOOR = 1000;
+  static TIME_TO_OPEN_DOOR = 2500;
+  static TIME_TO_CLOSE_DOOR = 2500;
   static WIDTH = 50;
   static HEIGHT = 100;
   static BORDER_HEIGHT = 1;
@@ -86,14 +88,14 @@ class Lift {
         setTimeout(() => {
           liftDoor1.classList.add('slide-door-1__close');
           liftDoor2.classList.add('slide-door-2__close');
-        }, 2500);
+        }, Lift.TIME_TO_OPEN_DOOR);
 
         setTimeout(() => {
           liftDoor1.classList.remove('slide-door-1__open');
           liftDoor1.classList.remove('slide-door-1__close');
           liftDoor2.classList.remove('slide-door-2__open');
           liftDoor2.classList.remove('slide-door-2__close');
-        }, 5000);
+        }, Lift.TIME_TO_OPEN_DOOR + Lift.TIME_TO_CLOSE_DOOR);
 
         clearInterval(intervalKey);
       }

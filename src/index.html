@@ -9,27 +9,29 @@
 
   <body>
     <div id="root">
-      <form class="form">
-        <input
-          type="text"
-          name="number-of-floors"
-          id="number-of-floors"
-          placeholder="Number of floors"
-          class="form__input"
-          value="5"
-        />
+      <div class="form__container">
+        <form class="form">
+          <input
+            type="text"
+            name="number-of-floors"
+            id="number-of-floors"
+            placeholder="Number of floors"
+            class="form__input"
+            value="5"
+          />
 
-        <input
-          type="text"
-          name="number-of-lifts"
-          id="number-of-lifts"
-          placeholder="Number of lifts"
-          class="form__input"
-          value="1"
-        />
+          <input
+            type="text"
+            name="number-of-lifts"
+            id="number-of-lifts"
+            placeholder="Number of lifts"
+            class="form__input"
+            value="3"
+          />
 
-        <button type="submit" class="form__submit-btn">Submit</button>
-      </form>
+          <button type="submit" class="form__submit-btn">Submit</button>
+        </form>
+      </div>
 
       <div id="lift-simulator" class="lift-simulator"></div>
     </div>

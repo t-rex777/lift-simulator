@@ -1,12 +1,19 @@
 body,
 html {
   margin: 0;
-  padding: 0;
+  padding: 2rem;
   box-sizing: border-box;
   font-family: monospace;
 }
 
+.form__container {
+  width: 100%;
+  display: flex;
+  margin-bottom: 2rem;
+}
+
 .form {
+  width: 100%;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -31,7 +38,6 @@ html {
 .lift-simulator {
   display: flex;
   flex-direction: column;
-  padding: 0 8rem;
 }
 
 .floor {

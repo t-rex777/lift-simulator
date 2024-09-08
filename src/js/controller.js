@@ -44,14 +44,30 @@ class Lift {
     return Math.min(floorsToGo);
   }
 
-  animate() {
-    const liftElement = document.getElementById(this.id);
+  animateLiftDoors(liftElement) {
     const liftDoor1 = liftElement.firstChild;
     const liftDoor2 = liftElement.lastChild;
 
-    if (liftDoor1 == null || liftDoor2 == null) {
+    if (liftDoor1 === null || liftDoor2 === null) {
       throw new Error('lift doors not found');
     }
+
+    liftDoor1.classList.add('slide-door-1__open');
+    liftDoor2.classList.add('slide-door-2__open');
+
+    setTimeout(() => {
+      liftDoor1.classList.add('slide-door-1__close');
+      liftDoor2.classList.add('slide-door-2__close');
+    }, Lift.TIME_TO_OPEN_DOOR);
+
+    setTimeout(() => {
+      liftDoor1.classList.remove('slide-door-1__open', 'slide-door-1__close');
+      liftDoor2.classList.remove('slide-door-2__open', 'slide-door-2__close');
+    }, Lift.TIME_TO_OPEN_DOOR + Lift.TIME_TO_CLOSE_DOOR);
+  }
+
+  animateLiftMoving() {
+    const liftElement = document.getElementById(this.id);
 
     // floor starts from 1
     let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
@@ -69,6 +85,9 @@ class Lift {
     const step = 10;
 
     if (distanceBetweenFloors === 0) {
+      // just open doors and close
+      this.animateLiftDoors(liftElement);
+
       return;
     }
 
@@ -82,20 +101,7 @@ class Lift {
 
       // stop the animation
       if (initialPosition === finalPosition) {
-        liftDoor1.classList.add('slide-door-1__open');
-        liftDoor2.classList.add('slide-door-2__open');
-
-        setTimeout(() => {
-          liftDoor1.classList.add('slide-door-1__close');
-          liftDoor2.classList.add('slide-door-2__close');
-        }, Lift.TIME_TO_OPEN_DOOR);
-
-        setTimeout(() => {
-          liftDoor1.classList.remove('slide-door-1__open');
-          liftDoor1.classList.remove('slide-door-1__close');
-          liftDoor2.classList.remove('slide-door-2__open');
-          liftDoor2.classList.remove('slide-door-2__close');
-        }, Lift.TIME_TO_OPEN_DOOR + Lift.TIME_TO_CLOSE_DOOR);
+        this.animateLiftDoors(liftElement);
 
         clearInterval(intervalKey);
       }
@@ -116,9 +122,7 @@ class Lift {
 
       this.direction = this.nextFloor - this.currentFloor > 0 ? 'up' : 'down';
 
-      this.animate();
-
-      console.log({ time: this.timeToReachTheFloor });
+      this.animateLiftMoving();
 
       setTimeout(() => {
         this.isMoving = false;
@@ -159,18 +163,41 @@ class LiftSimulator {
     });
   }
 
-  #assignLift() {
+  get #isLastLift() {
+    return (
+      this.#lastAssignedLiftId === null ||
+      Number(this.#lastAssignedLiftId) === this.numberOfLifts - 1
+    );
+  }
+
+  /**
+   *
+   * @param {Lift} lift
+   * @param {Number} floorNumber
+   * @returns {boolean}
+   */
+  #isSameFloor = (lift, floorNumber) => {
+    return (
+      Number(lift.currentFloor) === Number(floorNumber - 1) && !lift.isMoving
+    );
+  };
+
+  /**
+   * @param {Number} floorNumber
+   */
+  #assignLift(floorNumber) {
     /** @type Lift */
     let assignedLift;
 
     if (this.numberOfLifts === 1) {
       assignedLift = this.lifts[0];
     } else {
-      assignedLift = this.lifts.find((d) => {
-        return this.#lastAssignedLiftId === null ||
-          Number(this.#lastAssignedLiftId) === Number(this.numberOfLifts - 1)
-          ? d.id === 0
-          : d.id === this.#lastAssignedLiftId + 1;
+      assignedLift = this.lifts.find((lift) => {
+        if (this.#isSameFloor(lift, floorNumber)) return true;
+
+        if (this.#isLastLift) return lift.id === 0;
+
+        return lift.id === this.#lastAssignedLiftId + 1;
       });
     }
 
@@ -182,9 +209,12 @@ class LiftSimulator {
     return assignedLift;
   }
 
+  /**
+   * @param {Number} floorNumber
+   */
   addEvent(floorNumber) {
     this.#eventQueue.push(floorNumber);
 
-    return this.#assignLift();
+    return this.#assignLift(floorNumber);
   }
 }

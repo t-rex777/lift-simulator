@@ -45,8 +45,9 @@ class Lift {
   animate() {
     const liftElement = document.getElementById(this.id);
 
-    const distanceToTravel =
-      (this.nextFloor - this.currentFloor) * (Lift.HEIGHT + Lift.BORDER_HEIGHT);
+    const distanceToTravel = Math.abs(
+      (this.nextFloor - this.currentFloor) * (Lift.HEIGHT + Lift.BORDER_HEIGHT)
+    );
 
     let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
     const finalPosition = Math.abs(
@@ -54,6 +55,7 @@ class Lift {
     );
 
     let intervalKey;
+
     const step = 10;
 
     if (distanceToTravel === 0) {
@@ -68,8 +70,11 @@ class Lift {
           ? initialPosition - 1
           : initialPosition + 1;
 
+      const stopPosition =
+        initialPosition === finalPosition - (finalPosition % 100); // subtracting border heights;
+
       // stop the animation
-      if (initialPosition === finalPosition) {
+      if (stopPosition) {
         clearInterval(intervalKey);
       }
     }, step);
@@ -87,6 +92,7 @@ class Lift {
         Lift.TIME_PER_FLOOR * Math.abs(this.nextFloor - this.currentFloor);
 
       this.direction = this.nextFloor - this.currentFloor > 0 ? 'up' : 'down';
+
       this.animate();
 
       setTimeout(() => {
@@ -152,8 +158,6 @@ class LiftSimulator {
   }
 
   addEvent(floorNumber) {
-    console.log({ floorNumber });
-
     this.#eventQueue.push(floorNumber);
 
     return this.#assignLift();

@@ -80,18 +80,78 @@ html {
 }
 
 .lift {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
   position: absolute;
   bottom: 0;
-  background-color: rgb(41, 183, 188);
-  /* animation: moveLift 2s ease 0s 1 normal none; */
+  background-color: #212529;
+  border: solid 1px black;
+  overflow: hidden;
 }
 
-/* @keyframes moveLift {
+.lift__door-1,
+.lift__door-2 {
+  box-sizing: border-box;
+  width: 50%;
+  height: 100%;
+  background-color: #adb5bd;
+  border: solid 1px #495057;
+  overflow: hidden;
+}
+
+.slide-door-1__open {
+  animation: openDoor1 2.5s ease-in-out;
+}
+
+.slide-door-1__close {
+  animation: closeDoor1 2.5s ease-in-out;
+}
+
+.slide-door-2__open {
+  animation: openDoor2 2.5s ease-in-out;
+}
+
+.slide-door-2__close {
+  animation: closeDoor2 2.5s ease-in-out;
+}
+
+@keyframes openDoor1 {
   0% {
-    transform: translateY(0);
+    transform: translateX(0);
   }
 
   100% {
-    transform: translateY(-100px);
+    transform: translateX(-100%);
   }
-} */
+}
+
+@keyframes openDoor2 {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes closeDoor1 {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes closeDoor2 {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}

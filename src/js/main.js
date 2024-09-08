@@ -59,11 +59,20 @@ function setupLifts(numberOfLifts) {
   Array.from({ length: numberOfLifts }).forEach((_, i) => {
     const lift = document.createElement('div');
 
+    const liftDoor1 = document.createElement('div');
+    const liftDoor2 = document.createElement('div');
+
     lift.id = i;
     lift.className = 'lift';
     lift.style.left = `${leftMargin + i * (Lift.WIDTH + gap)}px`;
     lift.style.width = `${Lift.WIDTH}px`;
     lift.style.height = `${Lift.HEIGHT}px`;
+
+    liftDoor1.className = 'lift__door-1';
+    liftDoor2.className = 'lift__door-2';
+
+    lift.appendChild(liftDoor1);
+    lift.appendChild(liftDoor2);
 
     lastFloor.appendChild(lift);
   });

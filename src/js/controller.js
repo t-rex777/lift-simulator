@@ -44,10 +44,17 @@ class Lift {
 
   animate() {
     const liftElement = document.getElementById(this.id);
+    const liftDoor1 = liftElement.firstChild;
+    const liftDoor2 = liftElement.lastChild;
 
+    if (liftDoor1 == null || liftDoor2 == null) {
+      throw new Error('lift doors not found');
+    }
+
+    // floor starts from 1
     let initialPosition = (this.currentFloor - 1) * Lift.HEIGHT;
 
-    const distanceToTravel = Math.abs(
+    const distanceBetweenFloors = Math.abs(
       (this.nextFloor - this.currentFloor) * (Lift.HEIGHT + Lift.BORDER_HEIGHT)
     );
 
@@ -59,7 +66,7 @@ class Lift {
 
     const step = 10;
 
-    if (distanceToTravel === 0) {
+    if (distanceBetweenFloors === 0) {
       return;
     }
 
@@ -73,6 +80,21 @@ class Lift {
 
       // stop the animation
       if (initialPosition === finalPosition) {
+        liftDoor1.classList.add('slide-door-1__open');
+        liftDoor2.classList.add('slide-door-2__open');
+
+        setTimeout(() => {
+          liftDoor1.classList.add('slide-door-1__close');
+          liftDoor2.classList.add('slide-door-2__close');
+        }, 2500);
+
+        setTimeout(() => {
+          liftDoor1.classList.remove('slide-door-1__open');
+          liftDoor1.classList.remove('slide-door-1__close');
+          liftDoor2.classList.remove('slide-door-2__open');
+          liftDoor2.classList.remove('slide-door-2__close');
+        }, 5000);
+
         clearInterval(intervalKey);
       }
     }, step);
@@ -87,11 +109,14 @@ class Lift {
       this.isMoving = true;
 
       this.timeToReachTheFloor =
-        Lift.TIME_PER_FLOOR * Math.abs(this.nextFloor - this.currentFloor);
+        Lift.TIME_PER_FLOOR * Math.abs(this.nextFloor - this.currentFloor) +
+        5000;
 
       this.direction = this.nextFloor - this.currentFloor > 0 ? 'up' : 'down';
 
       this.animate();
+
+      console.log({ time: this.timeToReachTheFloor });
 
       setTimeout(() => {
         this.isMoving = false;

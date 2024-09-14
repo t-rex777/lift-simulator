@@ -76,14 +76,26 @@ html {
   border-radius: 4px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.floor__down-button[disabled],
+.floor__up-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #e0e0e0;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.08);
 }
 
 .floor__down-button {
-  background-color: rgb(240, 217, 10);
+  background-color: rgba(252, 227, 0, 0.443);
+  border: solid 2px rgb(195, 195, 32);
 }
 
 .floor__up-button {
-  background-color: rgb(19, 224, 19);
+  background-color: rgb(99, 223, 99);
+  border: solid 2px rgb(4, 141, 4);
 }
 
 .lift {

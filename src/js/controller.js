@@ -108,6 +108,17 @@ class Lift {
     }, step);
   }
 
+  notifyAfterLiftArrives() {
+    window.dispatchEvent(
+      new CustomEvent('lift-arrived', {
+        detail: {
+          floorNumber: this.currentFloor,
+          direction: this.direction,
+        },
+      })
+    );
+  }
+
   move() {
     if (this.floorsQueue.size === 0) return;
 
@@ -126,7 +137,10 @@ class Lift {
 
       setTimeout(() => {
         this.isMoving = false;
+
         this.currentFloor = this.nextFloor;
+
+        this.notifyAfterLiftArrives();
 
         this.floorsQueue.delete(this.currentFloor);
 
@@ -206,7 +220,7 @@ class LiftSimulator {
     assignedLift.addFloor(this.#eventQueue.shift());
     assignedLift.move();
 
-    return assignedLift;
+    return assignedLift.isMoving;
   }
 
   /**

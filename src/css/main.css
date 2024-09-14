@@ -33,6 +33,7 @@ html {
 .form__submit-btn {
   display: block;
   width: 100%;
+  padding: 8px 12px;
 }
 
 .lift-simulator {

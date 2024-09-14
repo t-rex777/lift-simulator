@@ -17,8 +17,27 @@ function setupFloors(engine, numberOfFloors) {
 
     const floorNumber = Number(numberOfFloors - i);
 
-    upButton.onclick = () => engine.addEvent(floorNumber);
-    downButton.onclick = () => engine.addEvent(floorNumber);
+    upButton.onclick = () => {
+      upButton.setAttribute('disabled', 'true');
+      engine.addEvent(floorNumber);
+
+      window.addEventListener('lift-arrived', (event) => {
+        if (Number(event.detail.floorNumber) === Number(floorNumber)) {
+          upButton.removeAttribute('disabled');
+        }
+      });
+    };
+
+    downButton.onclick = () => {
+      downButton.setAttribute('disabled', 'true');
+      engine.addEvent(floorNumber);
+
+      window.addEventListener('lift-arrived', (event) => {
+        if (Number(event.detail.floorNumber) === Number(floorNumber)) {
+          downButton.removeAttribute('disabled');
+        }
+      });
+    };
 
     floor.appendChild(upButton);
     floor.appendChild(downButton);
@@ -31,6 +50,7 @@ function setupFloors(engine, numberOfFloors) {
     floorNumberDiv.innerText = `Floor ${floorNumber}`;
 
     floor.className = 'floor';
+    floorWrapper.id = `floor-${floorNumber}`;
     floorNumberDiv.className = 'floor__number';
     floorWrapper.className = 'floor__wrapper';
     upButton.className = 'floor__up-button';

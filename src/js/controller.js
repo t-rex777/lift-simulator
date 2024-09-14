@@ -20,32 +20,6 @@ class Lift {
     this.id = id;
   }
 
-  #moveUp() {
-    /**
-     * floors that are above current floor
-     */
-    const floorsToGo = [...this.floorsQueue].filter(
-      (floor) => Number(floor.floorNumber) > Number(this.currentFloor)
-    );
-
-    if (floorsToGo.length === 0) return null;
-
-    return Math.min(floorsToGo);
-  }
-
-  #moveDown() {
-    /**
-     * floors that are below current floor
-     */
-    const floorsToGo = [...this.floorsQueue].filter(
-      (floor) => Number(floor.floorNumber) < Number(this.currentFloor)
-    );
-
-    if (floorsToGo.length === 0) return null;
-
-    return Math.min(floorsToGo);
-  }
-
   animateLiftDoors(liftElement) {
     const liftDoor1 = liftElement.firstChild;
     const liftDoor2 = liftElement.lastChild;
@@ -121,9 +95,11 @@ class Lift {
     );
   }
 
+  /**
+   * lift will move in same direction if the queue has more floors in the same direction
+   * after no floors are left in the same direction, then only it will move to opposite direction
+   */
   getNextFloorToMove() {
-    console.log(this.direction, this.currentFloor, [...this.floorsQueue]);
-
     if (
       this.direction === 'up' ||
       (this.currentFloor === 1 && this.direction === null)

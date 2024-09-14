@@ -19,7 +19,7 @@ function setupFloors(engine, numberOfFloors) {
 
     upButton.onclick = () => {
       upButton.setAttribute('disabled', 'true');
-      engine.addEvent(floorNumber);
+      engine.addEvent({ floorNumber, direction: 'up' });
 
       window.addEventListener('lift-arrived', (event) => {
         if (Number(event.detail.floorNumber) === Number(floorNumber)) {
@@ -30,7 +30,7 @@ function setupFloors(engine, numberOfFloors) {
 
     downButton.onclick = () => {
       downButton.setAttribute('disabled', 'true');
-      engine.addEvent(floorNumber);
+      engine.addEvent({ floorNumber, direction: 'down' });
 
       window.addEventListener('lift-arrived', (event) => {
         if (Number(event.detail.floorNumber) === Number(floorNumber)) {

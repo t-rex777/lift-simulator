@@ -8,7 +8,9 @@ class Lift {
 
   currentFloor = 1;
   nextFloor = 1;
+  /** @type {Set<{floorNumber: Number; direction: 'up' | 'down'}>} */
   floorsQueue = new Set([]);
+
   /** @type('up'|'down'|null) */
   direction = null;
   timeToReachTheFloor = 0;
@@ -23,7 +25,7 @@ class Lift {
      * floors that are above current floor
      */
     const floorsToGo = [...this.floorsQueue].filter(
-      (floor) => Number(floor) > Number(this.currentFloor)
+      (floor) => Number(floor.floorNumber) > Number(this.currentFloor)
     );
 
     if (floorsToGo.length === 0) return null;
@@ -36,7 +38,7 @@ class Lift {
      * floors that are below current floor
      */
     const floorsToGo = [...this.floorsQueue].filter(
-      (floor) => Number(floor) < Number(this.currentFloor)
+      (floor) => Number(floor.floorNumber) < Number(this.currentFloor)
     );
 
     if (floorsToGo.length === 0) return null;
@@ -119,11 +121,48 @@ class Lift {
     );
   }
 
+  getNextFloorToMove() {
+    console.log(this.direction, this.currentFloor, [...this.floorsQueue]);
+
+    if (
+      this.direction === 'up' ||
+      (this.currentFloor === 1 && this.direction === null)
+    ) {
+      const nextFloor = [...this.floorsQueue].find((floor) => {
+        return (
+          Number(floor.floorNumber) > Number(this.currentFloor) &&
+          floor.direction === 'up'
+        );
+      });
+
+      if (nextFloor === undefined) {
+        return [...this.floorsQueue].shift();
+      }
+
+      return nextFloor;
+    }
+
+    if (this.direction === 'down') {
+      const nextFloor = [...this.floorsQueue].find((floor) => {
+        return (
+          Number(floor.floorNumber) < Number(this.currentFloor) &&
+          floor.direction === 'down'
+        );
+      });
+
+      if (nextFloor === undefined) {
+        return [...this.floorsQueue].shift();
+      }
+
+      return nextFloor;
+    }
+  }
+
   move() {
     if (this.floorsQueue.size === 0) return;
 
     if (!this.isMoving) {
-      this.nextFloor = [...this.floorsQueue].shift();
+      this.nextFloor = this.getNextFloorToMove().floorNumber;
 
       this.isMoving = true;
 
@@ -142,7 +181,11 @@ class Lift {
 
         this.notifyAfterLiftArrives();
 
-        this.floorsQueue.delete(this.currentFloor);
+        this.floorsQueue = new Set(
+          [...this.floorsQueue].filter(
+            (d) => d.floorNumber !== this.currentFloor
+          )
+        );
 
         if (this.floorsQueue.size !== 0) {
           // iterate until the queue is empty
@@ -152,12 +195,14 @@ class Lift {
     }
   }
 
-  addFloor(floorNumber) {
-    this.floorsQueue.add(floorNumber);
+  /** @param {floorNumber: Number; direction: 'up' | 'down'} */
+  addFloor(props) {
+    this.floorsQueue.add(props);
   }
 }
 
 class LiftSimulator {
+  /** @type { {floorNumber: Number; direction: 'up' | 'down'}[] } */
   #eventQueue = [];
   #lastAssignedLiftId = null;
 
@@ -168,12 +213,6 @@ class LiftSimulator {
     /** @type Lift[] */
     this.lifts = Array.from({ length: this.numberOfLifts }).map((_, i) => {
       return new Lift(i);
-    });
-  }
-
-  get #isAllLiftsMoving() {
-    return this.#eventQueue.every((lift) => {
-      return lift.isMoving;
     });
   }
 
@@ -197,9 +236,9 @@ class LiftSimulator {
   };
 
   /**
-   * @param {Number} floorNumber
+   * @param { floorNumber: Number; direction: 'up' | 'down' }
    */
-  #assignLift(floorNumber) {
+  #assignLift({ floorNumber, direction }) {
     /** @type Lift */
     let assignedLift;
 
@@ -211,6 +250,7 @@ class LiftSimulator {
 
         if (this.#isLastLift) return lift.id === 0;
 
+        // round robin
         return lift.id === this.#lastAssignedLiftId + 1;
       });
     }
@@ -220,15 +260,16 @@ class LiftSimulator {
     assignedLift.addFloor(this.#eventQueue.shift());
     assignedLift.move();
 
-    return assignedLift.isMoving;
+    return assignedLift;
   }
 
   /**
-   * @param {Number} floorNumber
+   * @param { floorNumber: Number; direction: 'up' | 'down' }
+   * @returns {Lift}
    */
-  addEvent(floorNumber) {
-    this.#eventQueue.push(floorNumber);
+  addEvent({ floorNumber, direction }) {
+    this.#eventQueue.push({ floorNumber, direction });
 
-    return this.#assignLift(floorNumber);
+    return this.#assignLift({ floorNumber, direction });
   }
 }

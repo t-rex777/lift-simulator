@@ -3,6 +3,8 @@ let numberOfLifts = 0;
 let displayForm = false;
 
 const form = document.querySelector('form');
+const fromSubmitButton = document.querySelector('.form__submit-btn');
+
 form.addEventListener('submit', handleFormSubmit);
 
 const liftSimulator = document.querySelector('#lift-simulator');
@@ -111,6 +113,12 @@ function handleFormSubmit(event) {
 
   numberOfFloors = formValues['number-of-floors'];
   numberOfLifts = formValues['number-of-lifts'];
+
+  if (!numberOfFloors || !numberOfLifts) {
+    window.alert('Please enter number of floors and lifts');
+    return;
+  }
+
   displayForm = true;
 
   const engine = new LiftSimulator(numberOfFloors, numberOfLifts);

@@ -206,29 +206,37 @@ class LiftSimulator {
    * @returns {boolean}
    */
   #isSameFloor = (lift, floorNumber) => {
-    return (
-      Number(lift.currentFloor) === Number(floorNumber - 1) && !lift.isMoving
-    );
+    return Number(lift.currentFloor) === Number(floorNumber) && !lift.isMoving;
   };
 
   /**
-   * @param { floorNumber: Number; direction: 'up' | 'down' }
+   * Assigns a lift to a floor number
+   * @param {Number} floorNumber The floor number to assign the lift to
+   * @returns {Lift} The assigned lift
    */
-  #assignLift({ floorNumber, direction }) {
+  #assignLift(floorNumber) {
     /** @type Lift */
     let assignedLift;
 
     if (this.numberOfLifts === 1) {
       assignedLift = this.lifts[0];
     } else {
-      assignedLift = this.lifts.find((lift) => {
-        if (this.#isSameFloor(lift, floorNumber)) return true;
+      const liftAtCurrentFloorAndResting = this.lifts.find((lift) =>
+        this.#isSameFloor(lift, floorNumber)
+      );
 
-        if (this.#isLastLift) return lift.id === 0;
+      if (liftAtCurrentFloorAndResting !== undefined) {
+        assignedLift = liftAtCurrentFloorAndResting;
+      } else {
+        assignedLift = this.lifts.find((lift) => {
+          if (this.#isLastLift) {
+            return lift.id === 0;
+          }
 
-        // round robin
-        return lift.id === this.#lastAssignedLiftId + 1;
-      });
+          // round robin
+          return lift.id === this.#lastAssignedLiftId + 1;
+        });
+      }
     }
 
     this.#lastAssignedLiftId = assignedLift.id;
@@ -240,12 +248,13 @@ class LiftSimulator {
   }
 
   /**
-   * @param { floorNumber: Number; direction: 'up' | 'down' }
-   * @returns {Lift}
+   * Assigns a lift to the event queue
+   * @param {{ floorNumber: number, direction: 'up' | 'down' }} event The event to assign the lift to
+   * @returns {Lift} The assigned lift
    */
   addEvent({ floorNumber, direction }) {
     this.#eventQueue.push({ floorNumber, direction });
 
-    return this.#assignLift({ floorNumber, direction });
+    return this.#assignLift(floorNumber);
   }
 }
